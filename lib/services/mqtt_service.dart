@@ -6,7 +6,12 @@ import 'package:mqtt_client/mqtt_client.dart';
 
 class MqttService extends GetxService {
   late MqttBrowserClient _client;
-  final MqttModel _mqttModel = MqttModel();
+  final MqttModel _mqttModel = MqttModel(
+      brokerAddress: 'ws://192.168.137.1',
+      port: 8083,
+      clientId: 'flutter_client',
+      username: 'denyryn',
+      password: '12345');
 
   // Observable connection state with a more reliable state tracking
   final RxBool isConnected = false.obs;
@@ -96,7 +101,7 @@ class MqttService extends GetxService {
 
   Future<bool> publish(String topic, String message) async {
     if (!isConnected.value) {
-      print('Cannot publish. Client is not connected.');
+      print('Cannot publish. Client is not connected. Reconnecting...');
       // Try to reconnect
       final connected = await connect();
       if (!connected) {
@@ -118,7 +123,7 @@ class MqttService extends GetxService {
 
   Future<bool> subscribe(String topic) async {
     if (!isConnected.value) {
-      print('Cannot subscribe. Client is not connected.');
+      print('Cannot subscribe. Client is not connected. Reconnecting...');
       // Try to reconnect
       final connected = await connect();
       if (!connected) {
@@ -128,7 +133,6 @@ class MqttService extends GetxService {
 
     try {
       _client.subscribe(topic, MqttQos.atMostOnce);
-
       print('Subscribed to topic: $topic');
       return true;
     } catch (e) {

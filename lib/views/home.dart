@@ -25,6 +25,13 @@ class HomePage extends StatelessWidget {
                     : _viewModel.connect()
               },
             ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.bug_report_outlined),
+              onPressed: () => {Get.toNamed(Routes.debug)},
+            ),
           )
         ],
       ),
