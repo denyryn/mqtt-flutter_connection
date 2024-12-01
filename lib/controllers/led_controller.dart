@@ -12,29 +12,6 @@ class LedController extends GetxController {
   // Initialize ledList directly without needing to declare it late
   final ledList = LedsInitialization().ledList;
 
-  @override
-  void onInit() {
-    super.onInit();
-    _updateLedListFromStates();
-  }
-
-  void _updateLedListFromStates() {
-    final ledList = LedsInitialization().ledList; // Access the LED list
-
-    // Iterate over ledStates and update ledList
-    ledStates.forEach((pin, ledModel) {
-      // Check if the LED already exists in the list
-      final existingLed = ledList.firstWhere(
-        (led) => led.pin == pin,
-      );
-
-      // Update the existing LED in the list
-      final index = ledList.indexOf(existingLed);
-      ledList[index] = ledModel;
-      print("Updated LED in ledList: $ledModel");
-    });
-  }
-
   void _setupLedStateCallback() {
     const topic = 'denyryn/datas/leds/D4';
     _mqttService.registerCallback(topic, (String message) {
