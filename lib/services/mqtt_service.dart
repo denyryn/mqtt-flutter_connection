@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'utils.dart';
 import '../models/mqtt_model.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
 class MqttService extends GetxService {
   late MqttBrowserClient _client;
+
+  final Utils _utils = Get.put(Utils());
+
   final MqttModel _mqttModel = MqttModel(
       brokerAddress: 'ws://192.168.137.1',
       port: 8083,
@@ -14,8 +18,8 @@ class MqttService extends GetxService {
       password: '12345');
 
   // Observable connection state with a more reliable state tracking
-  final RxBool isConnected = false.obs;
-  final RxBool isConnecting = false.obs;
+  RxBool isConnected = false.obs;
+  RxBool isConnecting = false.obs;
 
   final _messageCallbacks = <String, Function(String)>{};
 
@@ -25,8 +29,27 @@ class MqttService extends GetxService {
   String get username => _mqttModel.username;
   String get password => _mqttModel.password;
 
+  Future<void> _initialize() async {
+    _client = MqttBrowserClient(broker, clientId, maxConnectionAttempts: 3);
+    _client.logging(on: false);
+    _client.port = port;
+    _client.keepAlivePeriod = 120;
+    _client.connectTimeoutPeriod = 10000; // 10 seconds
+    _client.onConnected = onConnected;
+    _client.onDisconnected = onDisconnected;
+
+    _client.connectionMessage = MqttConnectMessage()
+        .authenticateAs(username, password)
+        .withWillTopic('willtopic')
+        .withWillMessage('Will message')
+        .startClean()
+        .withWillQos(MqttQos.atLeastOnce);
+  }
+
   // Add connection retry logic
   Future<bool> connect() async {
+    await _initialize();
+
     if (isConnecting.value) {
       print('Connection attempt already in progress');
       return false;
@@ -37,51 +60,37 @@ class MqttService extends GetxService {
       return true;
     }
 
-    isConnecting.value = true;
+    _utils.refreshVariableValue(isConnecting, true);
 
     try {
-      _client = MqttBrowserClient(broker, clientId, maxConnectionAttempts: 3);
-      _client.logging(on: false);
-      _client.port = port;
-      _client.keepAlivePeriod = 120;
-      _client.connectTimeoutPeriod = 10000; // 10 seconds
-      _client.onConnected = onConnected;
-      _client.onDisconnected = onDisconnected;
-
-      _client.connectionMessage = MqttConnectMessage()
-          .authenticateAs(username, password)
-          .withWillTopic('willtopic')
-          .withWillMessage('Will message')
-          .startClean()
-          .withWillQos(MqttQos.atLeastOnce);
-
       print('Connecting to $broker on port $port...');
       await _client.connect();
 
       // Ensure connection is successful before setting isConnected
-      if (_client.connectionStatus?.state == MqttConnectionState.connected) {
-        isConnected.value = true; // Set after confirming successful connection
-        _setupMessageHandler();
-        print('Connected successfully!');
-        return true;
-      } else {
+      if (!(_client.connectionStatus?.state == MqttConnectionState.connected)) {
         print('Connection failed: ${_client.connectionStatus?.state}');
         return false;
       }
+
+      _setupMessageHandler();
+      print('Connected successfully!');
+      return true;
     } catch (e) {
       print('Error during connection: $e');
       _client.disconnect();
       return false;
     } finally {
-      isConnecting.value = false;
+      _utils.refreshVariableValue(isConnecting, false);
     }
   }
 
   void onConnected() {
     print('Connected to broker!');
-    isConnected.value = true;
-    isConnected.refresh();
-    isConnecting.value = false;
+
+    _utils.refreshVariableValue(isConnected,
+        _client.connectionStatus?.state == MqttConnectionState.connected);
+    print("isConnected value : ${isConnected.value}");
+
     Get.snackbar('MQTT Connection', 'Connected to broker!',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
@@ -90,9 +99,13 @@ class MqttService extends GetxService {
 
   void onDisconnected() {
     print('Disconnected from broker');
-    isConnected.value = false;
-    isConnecting.value = false;
+
+    _utils.refreshVariableValue(isConnected,
+        _client.connectionStatus?.state == MqttConnectionState.connected);
+    print("isConnected value : ${isConnected.value}");
+
     _messageCallbacks.clear();
+
     Get.snackbar('MQTT Connection', 'Disconnected from broker!',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
@@ -176,8 +189,5 @@ class MqttService extends GetxService {
       _messageCallbacks.clear();
       _client.disconnect();
     }
-    isConnected.value = false;
-    isConnected.refresh();
-    isConnecting.value = false;
   }
 }
