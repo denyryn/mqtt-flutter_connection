@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:mqtt_simple_connection/repositories/topics_repository.dart';
 import '../models/dht_model.dart';
 import '../services/mqtt_service.dart';
 
@@ -17,7 +18,11 @@ class DhtController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getDhtData('denyryn/datas/dht');
+    fetchDhtData();
+  }
+
+  Future<void> fetchDhtData() async {
+    return getDhtData(TopicsRepository.dhtTopic);
   }
 
   Future<void> getDhtData(String topic) async {

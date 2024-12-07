@@ -42,7 +42,7 @@ class Gauge extends StatelessWidget {
                     min: min,
                     max: max,
                     degrees: 270,
-                    style: GaugeAxisStyle(
+                    style: const GaugeAxisStyle(
                       thickness: 30,
                       background: Colors.transparent,
                       segmentSpacing: 2,
@@ -51,7 +51,7 @@ class Gauge extends StatelessWidget {
                     ),
 
                     /// Define the progress bar (optional).
-                    progressBar: GaugeProgressBar.rounded(
+                    progressBar: const GaugeProgressBar.rounded(
                       color: Colors.transparent,
                     ),
 

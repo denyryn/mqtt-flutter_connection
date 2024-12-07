@@ -1,5 +1,6 @@
 // led_controller.dart
 import 'package:get/get.dart';
+import 'package:mqtt_simple_connection/repositories/topics_repository.dart';
 import 'dart:convert';
 import '../models/led_model.dart';
 import '../services/mqtt_service.dart';
@@ -8,28 +9,13 @@ import '../repositories/leds_initialization.dart';
 class LedController extends GetxController {
   late final MqttService _mqttService = Get.put(MqttService());
   final RxMap<String, LedModel> ledStates = <String, LedModel>{}.obs;
+  static const LedTopic = '${TopicsRepository.ledsTopic}/';
 
   // Initialize ledList directly without needing to declare it late
   final ledList = LedsInitialization().ledList;
 
-  void _setupLedStateCallback() {
-    const topic = 'denyryn/datas/leds/D4';
-    _mqttService.registerCallback(topic, (String message) {
-      try {
-        final Map<String, dynamic> data = json.decode(message);
-        final LedModel ledModel = LedModel.fromJson(data);
-        ledStates[ledModel.pin] = ledModel;
-        print("LED Pin state updated: ${ledModel.pin}");
-        print("LED state updated: $ledModel");
-        update();
-      } catch (e) {
-        print('Error parsing LED state message: $e');
-      }
-    });
-  }
-
   Future<void> getLedState(String pin) async {
-    String topic = 'denyryn/datas/leds/$pin';
+    String topic = LedTopic + pin;
     final success = await _mqttService.subscribe(topic);
     if (!success) {
       print("Failed to get LED state. Please check connection.");
@@ -37,7 +23,7 @@ class LedController extends GetxController {
   }
 
   Future<void> sendLedState(String pin, bool isOn, int? brightness) async {
-    String topic = 'denyryn/datas/leds/$pin';
+    String topic = LedTopic + pin;
     LedModel led = LedModel(pin: pin, status: isOn, brightness: brightness);
     String message = jsonEncode(led.toJson());
 

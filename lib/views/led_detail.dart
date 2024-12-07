@@ -8,6 +8,8 @@ class LedDetailPage extends StatelessWidget {
   // Declare the timer variable for debounce
   Timer? _debounceTimer;
 
+  LedDetailPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Get.put(LedDetailViewModel());

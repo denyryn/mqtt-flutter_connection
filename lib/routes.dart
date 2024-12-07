@@ -15,6 +15,6 @@ class Routes {
       page: () => LedDetailPage(),
     ),
     GetPage(name: debug, page: () => DebugPage()),
-    GetPage(name: observ, page: () => ObservPage())
+    GetPage(name: observ, page: () => const ObservPage())
   ];
 }

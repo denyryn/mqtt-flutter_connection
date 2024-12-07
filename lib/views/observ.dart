@@ -9,7 +9,7 @@ class ObservPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ObservViewModel _viewModel = Get.put(ObservViewModel());
+    final ObservViewModel viewModel = Get.put(ObservViewModel());
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +33,7 @@ class ObservPage extends StatelessWidget {
                       Obx(
                         () => Gauge(
                           label: "Temperature (C)",
-                          value: _viewModel
+                          value: viewModel
                               .dhtController.dhtValue.value.temperature.obs,
                           min: 0,
                           max: 60,
@@ -41,14 +41,14 @@ class ObservPage extends StatelessWidget {
                       ),
                       Obx(() => Gauge(
                             label: "Humidity (%)",
-                            value: _viewModel
+                            value: viewModel
                                 .dhtController.dhtValue.value.humidity.obs,
                             min: 0,
                             max: 100,
                           )),
                       Obx(() => Gauge(
                             label: "Intensity (cd)",
-                            value: _viewModel
+                            value: viewModel
                                 .ldrController.ldrValue.value.intensity.obs,
                             min: 0,
                             max: 1000,
@@ -75,7 +75,7 @@ class ObservPage extends StatelessWidget {
                                   color: Colors.orangeAccent,
                                   isCurved: true,
                                   spots:
-                                      _viewModel.dhtController.temperatureData,
+                                      viewModel.dhtController.temperatureData,
                                 ),
                                 LineChartBarData(
                                   isStrokeCapRound: false,
@@ -83,7 +83,7 @@ class ObservPage extends StatelessWidget {
                                   barWidth: 3,
                                   color: Colors.blueAccent,
                                   isCurved: true,
-                                  spots: _viewModel.dhtController.humidityData,
+                                  spots: viewModel.dhtController.humidityData,
                                 ),
                               ])),
                     )),

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'dart:convert';
 import '../models/ldr_model.dart';
+import '../repositories/topics_repository.dart';
 import '../services/mqtt_service.dart';
 
 class LdrController extends GetxController {
@@ -12,7 +13,11 @@ class LdrController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getLdrData('denyryn/datas/dht');
+    fetchLdrData();
+  }
+
+  Future<void> fetchLdrData() async {
+    return getLdrData(TopicsRepository.ldrTopic);
   }
 
   Future<void> getLdrData(String topic) async {

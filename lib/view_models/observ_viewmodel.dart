@@ -18,13 +18,13 @@ class ObservViewModel extends GetxController {
 
   Future<void> getLdrData() async {
     Timer.periodic(const Duration(seconds: 3), (timer) {
-      ldrController.getLdrData('denyryn/datas/ldr');
+      ldrController.fetchLdrData();
     });
   }
 
   Future<void> getDhtData() async {
     Timer.periodic(const Duration(seconds: 3), (timer) {
-      dhtController.getDhtData('denyryn/datas/dht');
+      dhtController.fetchDhtData();
     });
   }
 }

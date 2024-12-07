@@ -80,7 +80,7 @@ class DebugPage extends StatelessWidget {
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2),
                           blurRadius: 8,
-                          offset: Offset(0, 4),
+                          offset: const Offset(0, 4),
                         ),
                       ], // Added shadow for a subtle 3D effect
                     ),
@@ -91,7 +91,7 @@ class DebugPage extends StatelessWidget {
                           _viewmodel.isDebugging.value
                               ? "Debugging Status"
                               : "No Debugging",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class DebugPage extends StatelessWidget {
                           _viewmodel.isDebugging.value
                               ? _viewmodel.debugMessage.value
                               : "Not Debugging",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
                             fontStyle: FontStyle
