@@ -1,4 +1,4 @@
-# mqtt_simple_connection
+# MQTT SIMPLE CONNECTION
 
 A **Flutter application** demonstrating MQTT connectivity to control LEDs and retrieve sensor data. This app is designed for IoT enthusiasts looking to manage LED states and brightness while also integrating DHT and LDR sensors.
 
