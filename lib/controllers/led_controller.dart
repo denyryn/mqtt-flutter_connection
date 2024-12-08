@@ -38,15 +38,4 @@ class LedController extends GetxController {
   Future<bool> connectToMqtt() async {
     return await _mqttService.connect();
   }
-
-  void disconnectFromMqtt() {
-    _mqttService.disconnect();
-    ledStates.clear();
-  }
-
-  @override
-  void onClose() {
-    disconnectFromMqtt();
-    super.onClose();
-  }
 }
