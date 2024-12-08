@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'utils.dart';
 import '../models/mqtt_model.dart';
+// import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
@@ -30,7 +31,7 @@ class MqttService extends GetxService {
   String get password => _mqttModel.password;
 
   Future<void> _initialize() async {
-    _client = MqttBrowserClient(broker, clientId, maxConnectionAttempts: 3);
+    _client = MqttBrowserClient(broker, clientId, maxConnectionAttempts: 5);
     _client.logging(on: false);
     _client.port = port;
     _client.keepAlivePeriod = 120;
@@ -87,8 +88,7 @@ class MqttService extends GetxService {
   void onConnected() {
     print('Connected to broker!');
 
-    _utils.refreshVariableValue(isConnected,
-        _client.connectionStatus?.state == MqttConnectionState.connected);
+    _utils.refreshVariableValue(isConnected, true);
     print("isConnected value : ${isConnected.value}");
 
     Get.snackbar('MQTT Connection', 'Connected to broker!',
@@ -100,8 +100,7 @@ class MqttService extends GetxService {
   void onDisconnected() {
     print('Disconnected from broker');
 
-    _utils.refreshVariableValue(isConnected,
-        _client.connectionStatus?.state == MqttConnectionState.connected);
+    _utils.refreshVariableValue(isConnected, false);
     print("isConnected value : ${isConnected.value}");
 
     _messageCallbacks.clear();
